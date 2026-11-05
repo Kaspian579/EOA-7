@@ -1,0 +1,276 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
+@charset "utf-8";
+
+:root { color-scheme: light; box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px); }
+
+html { scroll-padding-top: env(safe-area-inset-top,0px); }
+
+body { margin: 0px; padding: 0px; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; background: rgb(255, 255, 255); color: rgb(0, 0, 0); }
+
+img { max-width: 100%; }
+
+[hidden]:not([hidden="until-found" i]) { display: none !important; }
+</style><style>
+@charset "utf-8";
+
+:root { color-scheme: dark; --bg: #070604; --panel: rgba(10,9,5,.80); --panel2: rgba(10,9,5,.92); --line: rgba(241,230,189,.16); --line2: rgba(241,230,189,.34); --fg: #ece4c6; --mute: #b7ad86; --accent: #f1e6bd; --ink: #120f06; --warn: #ff8a7a; --ok: #7dffa0; --display: 'Bebas Neue',Impact,'Arial Narrow',sans-serif; --body: 'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace; --serif: 'Cormorant Garamond',Georgia,'Times New Roman',serif; }
+
+html, body { height: 100%; background: var(--bg); color: var(--fg); }
+
+body { font-family: var(--body); font-size: 14px; overflow: hidden; }
+
+* { box-sizing: border-box; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+button { cursor: pointer; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#app { position: relative; height: 100%; overflow: hidden; }
+
+.scene { position: absolute; inset: 0px; pointer-events: none; }
+
+.scene canvas { position: absolute; inset: 0px; width: 100%; height: 100%; display: block; }
+
+.fx-vig { position: absolute; inset: 0px; pointer-events: none; background: radial-gradient(at 70% 50%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.6) 90%); }
+
+.fx-scan { position: absolute; inset: 0px; pointer-events: none; opacity: 0.2; background: repeating-linear-gradient(rgba(0, 0, 0, 0.35) 0px, rgba(0, 0, 0, 0.35) 1px, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0) 4px); }
+
+.fx-grain { position: absolute; inset: 0px; width: 100%; height: 100%; pointer-events: none; opacity: 0.09; mix-blend-mode: screen; image-rendering: pixelated; }
+
+.fx-danger { position: absolute; inset: 0px; pointer-events: none; opacity: 0; }
+
+.fx-fade { position: absolute; inset: 0px; pointer-events: none; background: rgb(0, 0, 0); opacity: 1; }
+
+.shell { position: absolute; inset: 0px; display: flex; gap: 0px; padding-left: env(safe-area-inset-left,0px); padding-right: env(safe-area-inset-right,0px); }
+
+#side { width: 300px; flex: 0 0 300px; display: flex; flex-direction: column; gap: 14px; padding: 18px 14px 14px 16px; background: var(--panel2); border-right: 1px solid var(--line); min-height: 0px; }
+
+.brand { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+
+.brand h1 { margin: 0px; font-family: var(--display); font-weight: 400; font-size: 44px; line-height: 0.9; letter-spacing: 0.06em; color: var(--accent); text-shadow: rgba(255, 232, 150, 0.25) 0px 0px 18px; }
+
+.eyebrow { font-size: 11px; letter-spacing: 0.24em; color: var(--mute); text-transform: uppercase; }
+
+#salaList { flex: 1 1 0%; min-height: 0px; overflow-y: auto; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+
+.sala { display: grid; grid-template-columns: 52px minmax(0px, 1fr) auto; align-items: center; gap: 10px; width: 100%; min-height: 58px; padding: 8px 8px 8px 0px; border-top: 0px; border-right: 0px; border-left: 0px; border-image: none; border-bottom: 1px solid var(--line); background: transparent; text-align: left; transition: background 0.2s, padding 0.25s; }
+
+.sala:hover { background: rgba(241, 230, 189, 0.07); }
+
+.sala[aria-current="true"] { background: linear-gradient(90deg, rgba(241, 230, 189, 0.14), rgba(241, 230, 189, 0)); padding-left: 8px; }
+
+.sala .code { font-family: var(--display); font-size: 34px; line-height: 1; text-align: right; }
+
+.sala .nm { display: block; font-family: var(--display); font-size: 21px; letter-spacing: 0.06em; line-height: 1.05; color: rgb(246, 238, 207); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.sala .lv { display: block; font-size: 11px; color: var(--mute); letter-spacing: 0.06em; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.sala .here { font-size: 11px; color: var(--ok); letter-spacing: 0.08em; white-space: nowrap; }
+
+.side-actions { display: flex; flex-direction: column; gap: 10px; }
+
+.btn { min-height: 44px; padding: 0px 16px; border: 1px solid var(--line2); background: rgba(0, 0, 0, 0.35); color: var(--accent); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+
+.btn:hover { background: rgba(241, 230, 189, 0.12); border-color: var(--accent); }
+
+.btn.solid { background: var(--accent); color: var(--ink); border-color: var(--accent); font-weight: 600; }
+
+.btn.solid:hover { background: rgb(255, 246, 207); }
+
+.btn.danger { color: var(--warn); border-color: rgba(255, 138, 122, 0.5); }
+
+.btn.small { min-height: 36px; padding: 0px 12px; font-size: 11px; }
+
+.me { display: flex; align-items: center; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+
+.me img { width: 36px; height: 36px; border-radius: 50%; flex: 0 0 36px; }
+
+.me .who { min-width: 0px; flex: 1 1 0%; }
+
+.me .who b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.linkish { background: none; border: 0px; padding: 4px 0px; color: var(--mute); font-size: 11px; letter-spacing: 0.1em; text-decoration: underline; text-underline-offset: 3px; min-height: 28px; }
+
+.linkish:hover { color: var(--accent); }
+
+.toggles { display: flex; gap: 8px; }
+
+.toggles .btn { flex: 1 1 0%; }
+
+#chat { flex: 1 1 auto; min-width: 0px; max-width: 880px; display: flex; flex-direction: column; background: var(--panel); backdrop-filter: blur(6px); border-right: 1px solid var(--line); }
+
+.top { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+
+.top .big { font-family: var(--display); font-size: 56px; line-height: 0.85; letter-spacing: 0.02em; }
+
+.top .ttl { min-width: 0px; flex: 1 1 220px; }
+
+.top h2 { margin: 0px; font-family: var(--display); font-weight: 400; font-size: 30px; letter-spacing: 0.07em; color: rgb(246, 238, 207); line-height: 1; text-wrap: balance; }
+
+.top p { margin: 4px 0px 0px; font-size: 12px; color: var(--mute); letter-spacing: 0.04em; }
+
+.top .acts { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.faces { display: flex; align-items: center; }
+
+.faces img { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgb(11, 10, 6); margin-left: -8px; }
+
+.faces img:first-child { margin-left: 0px; }
+
+.faces span { font-size: 11px; color: var(--ok); margin-left: 8px; letter-spacing: 0.08em; }
+
+#menuBtn { display: none; }
+
+#msgs { flex: 1 1 0%; min-height: 0px; overflow-y: auto; padding: 18px 18px 8px; display: flex; flex-direction: column; gap: 2px; }
+
+.day { align-self: center; margin: 14px 0px 8px; font-size: 11px; letter-spacing: 0.24em; color: var(--mute); }
+
+.m { display: grid; grid-template-columns: 36px minmax(0px, 1fr); gap: 12px; padding: 6px 0px; }
+
+.m.cont { padding-top: 0px; }
+
+.m img { width: 36px; height: 36px; border-radius: 50%; }
+
+.m .hd { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+
+.m .au { font-weight: 600; }
+
+.m .tc { font-size: 11px; color: var(--mute); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
+
+.m .tx { margin: 2px 0px 0px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--fg); }
+
+.m .tx a { color: var(--accent); }
+
+.m.mine .au::after { content: " · você"; color: var(--mute); font-weight: 400; font-size: 11px; }
+
+.empty { margin: auto; max-width: 420px; text-align: center; display: flex; flex-direction: column; gap: 10px; padding: 24px; }
+
+.empty p { margin: 0px; }
+
+.empty .q { font-family: var(--serif); font-style: italic; font-size: 24px; line-height: 1.3; color: var(--accent); }
+
+#typing { min-height: 22px; padding: 0px 18px; font-size: 11px; letter-spacing: 0.1em; color: var(--mute); }
+
+#composer { display: flex; gap: 10px; align-items: flex-end; padding-top: 10px; padding-right: 18px; padding-left: 18px; padding-bottom: max(16px,env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--line); }
+
+#txt { flex: 1 1 0%; min-width: 0px; resize: none; min-height: 48px; max-height: 160px; padding: 13px 14px; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--line2); color: var(--fg); line-height: 1.4; }
+
+#txt::placeholder { color: rgb(143, 134, 104); }
+
+#txt:focus { border-color: var(--accent); outline: none; }
+
+#banner { margin: 12px 18px 0px; padding: 10px 14px; border: 1px solid rgba(255, 138, 122, 0.5); background: rgba(60, 10, 5, 0.6); color: rgb(255, 213, 204); font-size: 12px; line-height: 1.5; }
+
+.sheet { position: absolute; inset: 0px; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, 0.6); z-index: 30; }
+
+.card { width: min(480px, 100%); max-height: 100%; overflow-y: auto; padding: 22px; background: var(--panel2); border: 1px solid var(--line2); display: flex; flex-direction: column; gap: 14px; box-shadow: rgba(0, 0, 0, 0.6) 0px 30px 80px; }
+
+.card h3 { margin: 0px; font-family: var(--display); font-weight: 400; font-size: 32px; letter-spacing: 0.07em; color: var(--accent); }
+
+.fld { display: flex; flex-direction: column; gap: 6px; }
+
+.fld label { font-size: 11px; letter-spacing: 0.2em; color: var(--mute); text-transform: uppercase; }
+
+.fld input, .fld select { min-height: 44px; padding: 0px 12px; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--line2); color: var(--fg); }
+
+.fld select option { background: rgb(20, 18, 11); }
+
+.fld small { font-size: 11px; color: var(--mute); line-height: 1.4; }
+
+.lvpick { display: grid; grid-template-columns: repeat(3, minmax(0px, 1fr)); gap: 8px; }
+
+.lvpick button { min-height: 64px; padding: 8px; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.35); text-align: left; display: flex; flex-direction: column; gap: 2px; }
+
+.lvpick button b { font-family: var(--display); font-weight: 400; font-size: 26px; line-height: 1; }
+
+.lvpick button span { font-size: 10px; letter-spacing: 0.06em; color: var(--mute); }
+
+.lvpick button[aria-pressed="true"] { border-color: var(--accent); background: rgba(241, 230, 189, 0.12); }
+
+.row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+.err { color: var(--warn); font-size: 12px; min-height: 16px; }
+
+@media (max-width: 860px) {
+  #side { position: absolute; inset: 0px auto 0px 0px; width: min(320px, 86vw); z-index: 20; transform: translateX(-102%); transition: transform 0.3s; padding-left: max(16px,env(safe-area-inset-left,0px)); }
+  #side.open { transform: none; box-shadow: rgba(0, 0, 0, 0.7) 20px 0px 60px; }
+  #menuBtn { display: inline-flex; }
+  #chat { max-width: none; border-right: 0px; }
+  .top { padding: 12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px)); }
+  .top .big { font-size: 42px; }
+  .top h2 { font-size: 24px; }
+  #msgs { padding-left: max(16px,env(safe-area-inset-left,0px)); padding-right: max(16px,env(safe-area-inset-right,0px)); }
+  #composer { padding-left: max(16px,env(safe-area-inset-left,0px)); padding-right: max(16px,env(safe-area-inset-right,0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #side { transition: none; }
+}
+</style><!-- frame-runtime --><!-- /frame-runtime --><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>E O A! Central</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=Cormorant+Garamond:ital,wght@1,500&amp;display=swap">
+
+
+<div id="app">
+  <div class="scene" data-eoa="root" aria-hidden="true"><canvas data-eoa="canvas" data-engine="three.js r149" width="980" height="1928"></canvas></div>
+  <div class="fx-vig" aria-hidden="true"></div>
+  <div class="fx-scan" aria-hidden="true"></div>
+  <canvas data-eoa="grain" class="fx-grain" width="160" height="90" aria-hidden="true"></canvas>
+  <div data-eoa="danger" class="fx-danger" aria-hidden="true" style="opacity: 0;"></div>
+  <div data-eoa="fade" class="fx-fade" aria-hidden="true" style="opacity: 1;"></div>
+
+  <div class="shell">
+    <aside id="side" aria-label="Salas do grupo">
+      <div class="brand"><h1>E O A!</h1><span class="eyebrow">Central</span></div>
+      <span class="eyebrow">Salas · cada uma num nível</span>
+      <nav id="salaList" aria-label="Lista de salas"><button type="button" class="sala" aria-current="true"><span class="code" style="color: rgb(227, 207, 115);">0</span><span style="min-width: 0px;"><span class="nm">Saguão</span><span class="lv">Nível 0 · Backrooms</span></span><span class="here">1 aqui</span></button><button type="button" class="sala" aria-current="false"><span class="code" style="color: rgb(139, 233, 242);">37</span><span style="min-width: 0px;"><span class="nm">Jogo 1</span><span class="lv">Nível 37 · Poolrooms</span></span><span class="here"></span></button><button type="button" class="sala" aria-current="false"><span class="code" style="color: rgb(169, 184, 255);">9</span><span style="min-width: 0px;"><span class="nm">Jogo 2</span><span class="lv">Nível 9 · Subúrbio infinito</span></span><span class="here"></span></button><button type="button" class="sala" aria-current="false"><span class="code" style="color: rgb(95, 211, 227);">7</span><span style="min-width: 0px;"><span class="nm">Jogo 3</span><span class="lv">Nível 7 · Oceano</span></span><span class="here"></span></button><button type="button" class="sala" aria-current="false"><span class="code" style="color: rgb(207, 168, 255);">94</span><span style="min-width: 0px;"><span class="nm">Jogo 4</span><span class="lv">Nível 94 · Floresta</span></span><span class="here"></span></button><button type="button" class="sala" aria-current="false"><span class="code" style="color: rgb(255, 107, 95);">!</span><span style="min-width: 0px;"><span class="nm">Avisos urgentes</span><span class="lv">Nível ! · Run For Your Life</span></span><span class="here"></span></button></nav>
+      <div class="side-actions">
+        <button class="btn" id="newSalaBtn" type="button">+ Nova sala</button>
+        <div class="toggles">
+          <button class="btn small" id="soundBtn" type="button" aria-pressed="false">Som: off</button>
+          <button class="btn small" id="sceneBtn" type="button" aria-pressed="true">Cenário: on</button>
+        </div>
+        <div class="me">
+          <img id="meAv" alt="" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2232%22%20fill%3D%22%23dc3c3d%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2232%22%20dy%3D%22.35em%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2224%22%20fill%3D%22%23ffffff%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E" width="36" height="36">
+          <div class="who"><b id="meName">Caspian</b><button class="linkish" id="nickBtn" type="button">Mudar apelido</button></div>
+        </div>
+      </div>
+    </aside>
+
+    <main id="chat" aria-label="Conversa">
+      <div class="top">
+        <button class="btn small" id="menuBtn" type="button" aria-controls="side" aria-expanded="false">Salas</button>
+        <span class="big" id="topCode" style="color: rgb(227, 207, 115);">0</span>
+        <div class="ttl"><h2 id="topName">Saguão</h2><p id="topDesc">Nível 0 · Backrooms — Conversa geral do grupo</p></div>
+        <div class="acts">
+          <div class="faces" id="faces"><img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2232%22%20fill%3D%22%23dc3c3d%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2232%22%20dy%3D%22.35em%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2224%22%20fill%3D%22%23ffffff%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E" alt="Caspian" title="Caspian" width="24" height="24"><span>1 online</span></div>
+          
+          <button class="btn small" id="editBtn" type="button">Editar sala</button>
+        </div>
+      </div>
+      
+      <div id="msgs" role="log" aria-live="polite" aria-label="Mensagens"><div class="day">— HOJE —</div><div class="m mine"><img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2232%22%20fill%3D%22%23dc3c3d%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2232%22%20dy%3D%22.35em%22%20text-anchor%3D%22middle%22%20font-family%3D%22sans-serif%22%20font-size%3D%2224%22%20fill%3D%22%23ffffff%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E" alt="" width="36" height="36"><div style="min-width: 0px;"><div class="hd"><span class="au" style="color: rgb(220, 60, 61);">Caspian</span><span class="tc">19:18</span></div><p class="tx">Bombo Clat</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Naaaao</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Ficou na minha conta</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Tenta entrar com outra</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">nao consigo</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Pq?</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">nao sou maior de idade</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Cria uma</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">nao rola</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">não dá ninja</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Crua</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Man pfvr</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">eu ja tentei tomei restrição</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Kakakakakaka</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">nao tenho outro email</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Blz</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Eu tenho</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Quer?</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">😶‍🌫️</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">nah uh</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Quer ou n?</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">KAKAKAKAKA</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Blz</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">nao</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">mas tá funcionando</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">se eu entrei</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">É</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">ta nask</p></div></div><div class="m cont mine"><span></span><div style="min-width: 0px;"><p class="tx">Vou melhorar</p></div></div></div>
+      <div id="typing" aria-live="polite"></div>
+      <form id="composer" autocomplete="off">
+        <label for="txt" class="eyebrow" style="position:absolute;left:-9999px">Mensagem</label>
+        <textarea id="txt" rows="1" maxlength="1000" placeholder="Escreva para o grupo…  (Enter envia, Shift+Enter quebra linha)"></textarea>
+        <button class="btn solid" id="sendBtn" type="submit">Enviar</button>
+      </form>
+    </main>
+  </div>
+
+  
+
+  
+</div>
+
+
+
+
+
+</body></html>
